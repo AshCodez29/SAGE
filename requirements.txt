@@ -1,0 +1,41 @@
+# ─── CORE PIPELINE ───────────────────────────────
+openai                  # Whisper STT + GPT-4o brain
+pvporcupine             # wake word detection
+pyaudio                 # mic input / audio recording
+python-dotenv           # loads .env API keys
+
+# ─── SPEECH TO TEXT ──────────────────────────────
+openai-whisper          # local Whisper model
+
+# ─── TEXT TO SPEECH ──────────────────────────────
+elevenlabs              # SAGE's voice
+
+# ─── OS CONTROL ──────────────────────────────────
+pyautogui               # keyboard, mouse, screen control
+pygetwindow             # manage open windows
+pyperclip               # clipboard copy/paste
+
+# ─── BROWSER CONTROL ─────────────────────────────
+selenium                # open tabs, control browser
+webdriver-manager       # auto-installs chromedriver
+
+# ─── SPOTIFY ─────────────────────────────────────
+spotipy                 # Spotify API wrapper
+
+# ─── MESSAGING ───────────────────────────────────
+twilio                  # SMS sending
+
+# ─── EMOTION DETECTION ───────────────────────────
+librosa                 # audio feature extraction (pitch, energy)
+numpy                   # required by librosa
+nltk                    # NLP toolkit
+vaderSentiment          # sentiment analysis on text
+
+# ─── SCHEDULING / BACKGROUND TASKS ───────────────
+apscheduler             # background task scheduler
+
+# ─── MEMORY / STORAGE ────────────────────────────
+pyyaml                  # read config.yaml
+
+# ─── UTILITIES ───────────────────────────────────
+requests                # HTTP calls
