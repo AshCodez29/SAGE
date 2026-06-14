@@ -1,7 +1,8 @@
 import os
+import subprocess
 
-from elevenlabs import play
 from elevenlabs.client import ElevenLabs
+from elevenlabs.play import play
 
 client = None
 
@@ -25,4 +26,11 @@ def speak(text: str):
         model_id="eleven_multilingual_v2",  # handles Hindi/Hinglish
         output_format="mp3_44100_128",
     )
-    play(audio)
+    try:
+        play(audio)
+    except Exception as error:
+        if getattr(error, "status_code", None) == 402 or "paid_plan_required" in str(error):
+            print("[SAGE speaking via macOS fallback]")
+            subprocess.run(["say", text], check=False)
+            return
+        raise
