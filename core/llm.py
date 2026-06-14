@@ -3,6 +3,7 @@ import os
 from openai import OpenAI
 
 client = None
+model_name = None
 
 SYSTEM_PROMPT = """
 You are SAGE - a personal AI assistant running on the user's laptop.
@@ -19,18 +20,27 @@ Rules:
 conversation_history = []
 
 
+def _get_llm_client():
+    api_key = os.getenv("GROQ_API") or os.getenv("GROQ_API_KEY")
+    if api_key:
+        return OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1"), "llama-3.3-70b-versatile"
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if api_key:
+        return OpenAI(api_key=api_key), "gpt-4o"
+
+    raise RuntimeError("Missing API key. Set GROQ_API or OPENAI_API_KEY in your environment or .env file.")
+
+
 def think(user_input: str) -> str:
-    global client
+    global client, model_name
     if client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise RuntimeError("OPENAI_API_KEY is missing. Set it in your environment or .env file.")
-        client = OpenAI(api_key=api_key)
+        client, model_name = _get_llm_client()
 
     conversation_history.append({"role": "user", "content": user_input})
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=model_name,
         messages=[{"role": "system", "content": SYSTEM_PROMPT}, *conversation_history],
         max_tokens=150,
     )

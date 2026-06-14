@@ -1,50 +1,34 @@
 import os
-import pvporcupine
-import pyaudio
-import struct
 from dotenv import load_dotenv
+from core.stt import transcribe
+from core.llm import think
+from core.tts import speak
 
 load_dotenv()
 
-from core.llm import think
-from core.stt import transcribe
-from core.tts import speak
+
+def say(text: str) -> None:
+    if os.getenv("ELEVENLABS_API_KEY") or os.getenv("ELEVENLABS_API"):
+        speak(text)
+    else:
+        print(f"[SAGE]: {text}")
 
 def main():
-    porcupine = pvporcupine.create(
-        access_key=os.getenv("PORCUPINE_API_KEY"),
-        keywords=["jarvis"]  # closest built-in to "SAGE" for now
-    )
-
-    pa = pyaudio.PyAudio()
-    stream = pa.open(
-        rate=porcupine.sample_rate,
-        channels=1,
-        format=pyaudio.paInt16,
-        input=True,
-        frames_per_buffer=porcupine.frame_length
-    )
-
-    print("SAGE is listening... say 'Hey Jarvis' to wake me")
-    speak("SAGE online. How can I help you?")
+    say("SAGE online. Press Enter anytime to talk to me.")
+    print("SAGE is ready. Press Enter to speak, Ctrl+C to quit.")
 
     while True:
-        raw = stream.read(porcupine.frame_length, exception_on_overflow=False)
-        pcm = struct.unpack_from("h" * porcupine.frame_length, raw)
+        input()  # just press Enter to activate
+        print("Listening...")
+        say("Yes?")
 
-        result = porcupine.process(pcm)
+        text = transcribe()
+        print(f"You said: {text}")
 
-        if result >= 0:
-            print("Wake word detected! Listening...")
-            speak("Yes?")
-
-            text = transcribe()       # mic → whisper → text
-            print(f"You said: {text}")
-
-            if text:
-                response = think(text) # text → GPT → response
-                print(f"SAGE: {response}")
-                speak(response)        # response → ElevenLabs → audio
+        if text:
+            response = think(text)
+            print(f"SAGE: {response}")
+            say(response)
 
 if __name__ == "__main__":
     main()
