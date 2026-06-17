@@ -29,6 +29,6 @@ def main():
             response = think(text)
             print(f"SAGE: {response}")
             say(response)
-
+#h fiufgrfqryb6u
 if __name__ == "__main__":
     main()
